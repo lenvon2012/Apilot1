@@ -1,19 +1,18 @@
+import io
+import json
+import os
 import random
+import re
+from datetime import datetime, timedelta
+from urllib.parse import urlparse
+
 import plugins
 import requests
-import re
-import json
-import io
-from urllib.parse import urlparse
 from bridge.context import ContextType
 from bridge.reply import Reply, ReplyType
 from channel import channel
 from common.log import logger
 from plugins import *
-from datetime import datetime, timedelta
-import time
-import os
-from requests_html import HTMLSession
 
 BASE_URL_VVHAN = "https://api.vvhan.com/api/"
 BASE_URL_ALAPI = "https://v3.alapi.cn/api/"
@@ -469,65 +468,29 @@ class Apilot(Plugin):
         try:
             # 首先需要安装requests-html库
             # pip install requests-html
-            from requests_html import HTMLSession
             import random
             import time
-            from urllib.parse import urlparse
-            
-            # 创建会话
-            session = HTMLSession()
-            
-            # 多种User-Agent随机选择
-            user_agents = [
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
-                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15",
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:124.0) Gecko/20100101 Firefox/124.0"
-            ]
-            
-            # 解析URL获取域名
-            parsed_url = urlparse(image_url)
-            base_url = f"{parsed_url.scheme}://{parsed_url.netloc}"
-            
-            # 先访问首页获取cookies
-            logger.info(f"[早报] 先访问主域名: {base_url}")
-            headers = {
-                "User-Agent": random.choice(user_agents),
-                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
-                "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
-                "Connection": "keep-alive",
-                "Upgrade-Insecure-Requests": "1"
-            }
-            session.get(base_url, headers=headers)
-            
+
             # 随机延迟模拟人类行为
             time.sleep(random.uniform(1, 2))
-            
+
             # 访问图片URL
             logger.info(f"[早报] 下载图片: {image_url}")
-            headers = {
-                "User-Agent": random.choice(user_agents),
-                "Accept": "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
-                "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
-                "Referer": base_url,
-                "Connection": "keep-alive",
-                "Sec-Fetch-Dest": "image",
-                "Sec-Fetch-Mode": "no-cors",
-                "Sec-Fetch-Site": "same-origin",
-                "Pragma": "no-cache",
-                "Cache-Control": "no-cache"
-            }
-            
-            response = session.get(image_url, headers=headers, timeout=15)
-            
-            if response.status_code == 200:
-                img_io = io.BytesIO(response.content)
-                img_io.seek(0)
-                logger.info(f"[早报] 图片下载成功: {len(response.content)/1024:.2f} KB")
-                return img_io
-            else:
-                logger.error(f"[早报] 请求失败，状态码: {response.status_code}")
-                return self._try_backup_apis(image_url)
-            
+
+            try:
+                response = requests.get(image_url)
+                if response.status_code == 200:
+                    img_io = io.BytesIO(response.content)
+                    img_io.seek(0)
+                    logger.info(f"[早报] 图片下载成功: {len(response.content) / 1024:.2f} KB")
+                    return img_io
+                else:
+                    logger.error(f"[早报] 请求失败，状态码: {response.status_code}")
+                    return self._try_backup_apis(image_url)
+            except Exception as e:
+                logger.error(f"[早报] Failed to download image file: {e}")
+                return
+
         except Exception as e:
             logger.error(f"[早报] 模拟浏览器下载失败: {e}")
             return self._try_backup_apis(image_url)
