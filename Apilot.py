@@ -480,6 +480,10 @@ class Apilot(Plugin):
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:124.0) Gecko/20100101 Firefox/124.0"
             ]
 
+            # 解析URL获取域名
+            parsed_url = urlparse(image_url)
+            base_url = f"{parsed_url.scheme}://{parsed_url.netloc}"
+
             # 随机延迟模拟人类行为
             time.sleep(random.uniform(1, 2))
 
@@ -491,6 +495,8 @@ class Apilot(Plugin):
                 "Connection": "keep-alive",
                 "Upgrade-Insecure-Requests": "1"
             }
+
+            session.get(base_url, headers=headers)
 
             # 随机延迟模拟人类行为
             time.sleep(random.uniform(1, 2))
