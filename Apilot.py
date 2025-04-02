@@ -534,7 +534,7 @@ class Apilot(Plugin):
                 response = requests.get(image_url, headers=headers, stream=True)
                 response.raise_for_status()  # 检查请求是否成功
                 # response = session.get(image_url, headers=headers, stream=True)
-                logger.info(f"[早报] 请求失败，状态码: {response}")
+                logger.info(f"[早报] 请求，状态码: {response}")
                 if response.status_code == 200:
                     img_io = io.BytesIO(response.content)
                     img_io.seek(0)
