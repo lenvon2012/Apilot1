@@ -479,6 +479,7 @@ class Apilot(Plugin):
 
             try:
                 response = requests.get(image_url)
+                logger.info(f"[早报] 请求失败，状态码: {response}")
                 if response.status_code == 200:
                     img_io = io.BytesIO(response.content)
                     img_io.seek(0)
