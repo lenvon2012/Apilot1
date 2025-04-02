@@ -531,7 +531,7 @@ class Apilot(Plugin):
             # 访问图片URL
             logger.info(f"[早报] 下载图片: {image_url}")
             try:
-                response = requests.get(image_url, headers=headers, stream=True)
+                response = requests.get(image_url, stream=True)
                 response.raise_for_status()  # 检查请求是否成功
                 # response = session.get(image_url, headers=headers, stream=True)
                 logger.info(f"[早报] 请求，状态码: {response}")
