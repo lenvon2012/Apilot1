@@ -481,20 +481,47 @@ class Apilot(Plugin):
             ]
 
             # 解析URL获取域名
-            # parsed_url = urlparse(image_url)
-            # base_url = f"{parsed_url.scheme}://{parsed_url.netloc}"
+            parsed_url = urlparse(image_url)
+            base_url = f"{parsed_url.scheme}://{parsed_url.netloc}"
+
+            print(f"[早报] base_url: {base_url}")
 
             # 随机延迟模拟人类行为
             time.sleep(random.uniform(1, 2))
 
             # 先访问首页获取cookies
+            # headers = {
+            #     "User-Agent": random.choice(user_agents),
+            #     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+            #     "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
+            #     "Connection": "keep-alive",
+            #     "Upgrade-Insecure-Requests": "1"
+            # }
+
             headers = {
                 "User-Agent": random.choice(user_agents),
-                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+                "Referer": base_url,
+                "authority": "file.alapi.cn",
+                "Accept": "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
                 "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
+                "sec-ch-ua": '"Not=A?Brand";v="99", "Chromium";v="118"',
+                "sec-fetch-dest": "image",
                 "Connection": "keep-alive",
-                "Upgrade-Insecure-Requests": "1"
+                "sec-ch-ua-mobile": "?0",
+                "sec-ch-ua-platform": "Windows",
+                "cookie": "_aihecong_chat_address=%7B%22city%22%3A%22%E5%8D%97%E4%BA%AC%22%2C%22region%22%3A%22%E6%B1%9F%E8%8B%8F%22%2C%22country%22%3A%22%E4%B8%AD%E5%9B%BD%22%7D; _aihecong_chat_visibility=false",
+                "Accept-Encoding": "gzip, deflate, br",
+                "Upgrade-Insecure-Requests": "1",
+                "Sec-Fetch-Dest": "document",
+                "Sec-Fetch-Mode": "navigate",
+                "Sec-Fetch-Site": "same-origin",
+                "Sec-Fetch-User": "?1",
+                "Pragma": "no-cache",
+                "Cache-Control": "no-cache",
+                "TE": "trailers"
             }
+
+            headers["X-Forwarded-For"] = ".".join(str(random.randint(0, 255)) for _ in range(4))
 
             # session.get(base_url, headers=headers)
 
@@ -505,6 +532,7 @@ class Apilot(Plugin):
             logger.info(f"[早报] 下载图片: {image_url}")
             try:
                 response = requests.get(image_url, headers=headers, stream=True)
+                response.raise_for_status()  # 检查请求是否成功
                 # response = session.get(image_url, headers=headers, stream=True)
                 logger.info(f"[早报] 请求失败，状态码: {response}")
                 if response.status_code == 200:
