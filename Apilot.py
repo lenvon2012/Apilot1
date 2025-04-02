@@ -471,7 +471,7 @@ class Apilot(Plugin):
             import random
             import time
 
-            session = requests.Session()
+            # session = requests.Session()
 
             # 多种User-Agent随机选择
             user_agents = [
@@ -481,8 +481,8 @@ class Apilot(Plugin):
             ]
 
             # 解析URL获取域名
-            parsed_url = urlparse(image_url)
-            base_url = f"{parsed_url.scheme}://{parsed_url.netloc}"
+            # parsed_url = urlparse(image_url)
+            # base_url = f"{parsed_url.scheme}://{parsed_url.netloc}"
 
             # 随机延迟模拟人类行为
             time.sleep(random.uniform(1, 2))
@@ -496,7 +496,7 @@ class Apilot(Plugin):
                 "Upgrade-Insecure-Requests": "1"
             }
 
-            session.get(base_url, headers=headers)
+            # session.get(base_url, headers=headers)
 
             # 随机延迟模拟人类行为
             time.sleep(random.uniform(1, 2))
@@ -504,8 +504,8 @@ class Apilot(Plugin):
             # 访问图片URL
             logger.info(f"[早报] 下载图片: {image_url}")
             try:
-                # response = requests.get(image_url)
-                response = session.get(image_url, headers=headers, stream=True)
+                response = requests.get(image_url, headers=headers, stream=True)
+                # response = session.get(image_url, headers=headers, stream=True)
                 logger.info(f"[早报] 请求失败，状态码: {response}")
                 if response.status_code == 200:
                     img_io = io.BytesIO(response.content)
