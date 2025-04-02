@@ -559,7 +559,7 @@ class Apilot(Plugin):
                                 img_io = io.BytesIO(img_response.content)
                                 img_io.seek(0)
                                 logger.info(f"成功从备用API {api_url} 获取早报图片")
-                                return img_io.getvalue()
+                                return img_io
                             elif "api/60s" in api_url and 'imgUrl' in data:
                                 img_url = data['imgUrl']
                                 img_response = requests.get(img_url, headers=headers, timeout=10)
@@ -567,13 +567,13 @@ class Apilot(Plugin):
                                 img_io = io.BytesIO(img_response.content)
                                 img_io.seek(0)
                                 logger.info(f"成功从备用API {api_url} 获取早报图片")
-                                return img_io.getvalue()
+                                return img_io
                         # 如果是直接返回图片
                         else:
                             img_io = io.BytesIO(response.content)
                             img_io.seek(0)
                             logger.info(f"成功从备用API {api_url} 获取早报图片")
-                            return img_io.getvalue()
+                            return img_io
                     # 直接返回图片的API
                     else:
                         response = requests.get(api_url, headers=headers, timeout=10)
@@ -581,7 +581,7 @@ class Apilot(Plugin):
                         img_io = io.BytesIO(response.content)
                         img_io.seek(0)
                         logger.info(f"成功从备用API {api_url} 获取早报图片")
-                        return img_io.getvalue()
+                        return img_io
                         
                 except Exception as e:
                     logger.warning(f"从备用API {api_url} 获取早报图片失败: {e}")
