@@ -471,14 +471,35 @@ class Apilot(Plugin):
             import random
             import time
 
+            session = requests.Session()
+
+            # 多种User-Agent随机选择
+            user_agents = [
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
+                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15",
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:124.0) Gecko/20100101 Firefox/124.0"
+            ]
+
+            # 随机延迟模拟人类行为
+            time.sleep(random.uniform(1, 2))
+
+            # 先访问首页获取cookies
+            headers = {
+                "User-Agent": random.choice(user_agents),
+                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+                "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
+                "Connection": "keep-alive",
+                "Upgrade-Insecure-Requests": "1"
+            }
+
             # 随机延迟模拟人类行为
             time.sleep(random.uniform(1, 2))
 
             # 访问图片URL
             logger.info(f"[早报] 下载图片: {image_url}")
-
             try:
-                response = requests.get(image_url)
+                # response = requests.get(image_url)
+                response = session.get(image_url, headers=headers, stream=True)
                 logger.info(f"[早报] 请求失败，状态码: {response}")
                 if response.status_code == 200:
                     img_io = io.BytesIO(response.content)
